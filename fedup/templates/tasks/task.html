@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load comments %}
+{% load markup %}
+
+{% block scripts %}
+<script>
+$(document).ready(function(){
+    $('#complete').tooltip({placement: 'bottom'});
+    $('#complete').click(function(){
+        var task_id = $(this).data('id');
+        $.post('/tasks/' + task_id, {'completed': true})
+        .success(function(){
+            window.location = "/tasks";
+        });
+    });
+});
+</script>
+{% endblock %}
+
+
+{% block navigation %}
+<li><a href="/tasks" class="entypo">(</a></li>
+<li><a href="/tasks/{{ task.id }}">{{ task.title|lower }}</a></li>
+<li><a href="#" class="entypo" rel="tooltip" id="complete" data-id="{{ task.id }}" title="Complete the task.">W</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="task">
+    <div class="inline"><a class="date" href="/tasks/date/{{ task.due_date }}">{{ task.due_date|date:"M d | f a" }}</a></div>
+    <div class="inline">
+        {% for user in task.assigned_users.all %}
+            <a class="bubble username" href="/tasks/user/{{ user.id }}">{{ user.username|lower }}</a>
+        {% endfor %}
+    </div>
+    <div class="inline">
+        {% for tag in task.tag.all %}
+            <a class="bubble tag" href="/tasks/tag/{{ tag.id }}">{{ tag.name|lower }}</a>
+        {% endfor %}
+    </div>
+    <div class="inline"><a class="bubble list" href="/tasks/list/{{ task.task_list.id }}">{{ task.task_list.name|lower }}</a></div>
+    <div class="notes"><p>
+        {% if task.notes %}
+        {{ task.notes|markdown }}
+        {% endif %}
+        </p></div>
+</div>
+
+{% get_comment_list for task as comment_list %}
+{% for comment in comment_list %}
+<div class="comment">
+<p>{{ comment.comment|markdown }}</p>
+<p class="meta"><a href="/tasks/user/{{ comment.user.id }}">{{ comment.user }}</a> | {{ comment.submit_date|date:"d/m/y" }}</p>
+</div>
+{% endfor %}
+
+{% render_comment_form for task %}
+
+{% endblock %}

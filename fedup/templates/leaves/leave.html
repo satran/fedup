@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load comments %}
+{% load markup %}
+
+{% block scripts %}
+<script>
+$(document).ready(function(){
+    $('#complete').tooltip({placement: 'bottom'});
+    $('#complete').click(function(){
+        var leave_id = $(this).data('id');
+        $.post('/leaves/' + leave_id, {'approved': true})
+        .success(function(){
+            window.location = "/leaves";
+        });
+    });
+});
+</script>
+{% endblock %}
+
+
+{% block navigation %}
+<li><a href="/leaves" class="entypo">(</a></li>
+<li><a href="/leaves/{{ leave.id }}">{{ leave.reason|lower }}</a></li>
+<li><a href="#" class="entypo" rel="tooltip" id="complete" data-id="{{ leave.id }}" title="Approve the leave.">8</a></li>
+{% endblock %}
+
+{% block content %}
+<div class="task">
+    <div class="inline">on <a class="date" href="/leaves/date/{{ leave.from_date }}">{{ leave.from_date|date:"M d Y" }}</a></div>
+    {% if leave.to_date %}
+    <div class="inline">to <a class="date" href="/leaves/date/{{ leave.to_date }}">{{ leave.to_date|date:"M d Y" }}</a></div>
+    {% endif %}
+</div>
+
+{% get_comment_list for leave as comment_list %}
+{% for comment in comment_list %}
+<div class="comment">
+<p>{{ comment.comment|markdown }}</p>
+<p class="meta"><a href="/leaves/user/{{ comment.user.id }}">{{ comment.user }}</a> | {{ comment.submit_date|date:"d/m/y" }}</p>
+</div>
+{% endfor %}
+
+{% render_comment_form for leave %}
+
+{% endblock %}
+

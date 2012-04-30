@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<style>
+    .icon{
+        font-size: 160%;
+        font-weight: normal;
+    }
+    .span4{
+        padding: 50px;
+        margin-bottom: 20px;
+        min-width: 300px;
+    }
+    .span4 h1{
+        font-size: 460%;
+        margin-bottom: 30px;
+    }
+    .span4 li{
+        list-style: none;
+        line-height: 1.5;
+        margin-bottom: 3px;
+        border-bottom: 1px dotted #ccc;
+    }
+    .clear{
+        clear: both;
+    }
+    .ltasks a{
+        color: #CC3366;
+    }
+    .leaves a{
+        color: #00CC99;
+    }
+    .goals a{
+        color: #FFCC00;
+    }
+</style>
+{% endblock %}
+
+
+{% block navigation %}
+<li><a href="/" style="font-family: CabinSketch-Bold">fedup</a></li>
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span4 ltasks">
+            <h1><a href="/tasks/user/{{ user.id }}"><span class="entypo icon">l</span>tasks</a></h1>
+            <ul>
+                {% for task in tasks %}
+                <li><a href="/tasks/{{ task.id }}">{{ task.title }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="span4 leaves">
+            <h1><a href="/leaves"><span class="entypo icon">J</span>leave</a></h1>
+            <ul>
+                {% for leave in leaves %}
+                <li><a href="/leaves/{{ leave.id }}">{{ leave.reason }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="span4 goals">
+            <h1><a href="/goals"><span class="entypo icon">$</span>goals</a></h1>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

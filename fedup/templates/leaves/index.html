@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+
+{% block styles %}
+<style>
+.input-xlarge{
+    width: 100%;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function(){
+    $('#quick_leave').keypress(function(e){
+        if (e.keyCode == 13){
+            $(this).attr('disabled', 'disabled');
+            var leave = $('#quick_leave').val();
+            if (leave){
+                $.post('/leaves/', {'leave': leave})
+                .success(function(){
+                    $(this).removeAttr("disabled");
+                    $('#add_leave').modal('hide');
+                    location.reload();
+                })
+                .error(function(){
+                    $(this).removeAttr("disabled");
+                });
+            }
+        }
+    });
+});
+</script>
+
+{% endblock %}
+
+{% block navigation %}
+<li><a href="/" class="entypo">(</a></li>
+<li><a href="/leaves">leave</a></li>
+{% endblock %}
+
+
+
+{% block content %}
+
+<div class="tasks">
+<div class="task">
+    <input class="input-xlarge" id="quick_leave" 
+        placeholder="Add a leave. Use dd/mm/yy for date" />
+</div>
+{% for leave in leaves %}
+<div class="task">
+    <div class="inline done">
+        <div class="inline"><a class="title" href="/leaves/{{ leave.id }}">{{ leave.reason }}</a></div>
+        <div class="inline">on <a class="date" href="/leaves/date/{{ leave.from_date|date:"Y" }}/{{ leave.from_date|date:"n" }}/{{ leave.from_date|date:"j" }}">{{ leave.from_date|date:"M d" }}</a></div>
+        {% if leave.to_date %}
+        <div class="inline">to <a class="date" href="/leaves/date/{{ leave.to_date|date:"Y" }}/{{ leave.to_date|date:"n" }}/{{ leave.to_date|date:"j" }}">{{ leave.to_date|date:"M d" }}</a></div>
+        {% endif %}
+
+        <div class="inline">
+        {% if leave.approved %}
+            Approved
+        {% else %}
+            Unapproved
+        {% endif %}
+        </div>
+    </div>
+</div>
+{% endfor %}
+</div>
+
+
+{% endblock %}
+

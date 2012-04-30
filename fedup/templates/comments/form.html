@@ -1,0 +1,14 @@
+{% load comments i18n %}
+<form action="{% comment_form_target %}" method="post">{% csrf_token %}
+    <div><input type="hidden" name="next" value="{{ request.path  }}" /></div>
+  {% for field in form %}
+    {% if field.is_hidden %}
+      <div>{{ field }}</div>
+    {% endif %}
+  {% endfor %}
+  <div class="comment"><textarea name="comment" placeholder="Add your comment. Markup supported."></textarea></div>
+  <p class="submit">
+    <input type="submit" name="post" class="btn submit-post" value="{% trans "Post" %}" />
+  </p>
+</form>
+

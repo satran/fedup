@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+
+{% block styles %}
+<style>
+.modal{
+    display: none;
+}
+.input-xlarge{
+    width: 100%;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function(){
+    $('#add_task').modal({
+        show: false,
+        keyboard: true
+    }); 
+    $('.complete').click(function(){
+        var checked = false;
+        var task_id = $(this).data('id');
+        var parent = $(this).parent().parent();
+        if ($(this).attr('checked') === 'checked'){
+            checked = true;
+            $(this).parent().parent().css('text-decoration', 'line-through');
+            $('.tasks').append(parent);
+        }
+        else{
+            $(this).parent().parent().css('text-decoration', 'none');
+        }
+        $.post('/tasks/' + task_id, {'completed': checked});
+    });    
+
+    $('#add').click(function(){
+        $('#add_task').modal('show');
+    });
+
+    $('#btn_add_task').click(function(){
+        var task = $('#title').val();
+        var notes = $('#notes').val();
+        if (task){
+        $.post('/tasks/', {'task': task, 'notes': notes})
+        .success(function(){
+            $('#add_task').modal('hide');
+            location.reload();
+        });
+        }
+    });
+
+    $('#quick_task').keypress(function(e){
+        if (e.keyCode == 13){
+            var task = $('#quick_task').val();
+            $(this).attr('disabled', 'disabled');
+            if (task){
+                $.post('/tasks/', {'task': task})
+                .success(function(){
+                    $('#add_task').modal('hide');
+                    location.reload();
+                })
+                .error(function(){
+                    $(this).removeAttr("disabled");
+                });
+            }
+        }
+    });
+
+    $('#add').tooltip({placement: 'bottom'});
+    $('#completed').tooltip({placement: 'bottom'});
+});
+</script>
+
+{% endblock %}
+
+{% block navigation %}
+<li><a href="/" class="entypo">(</a></li>
+<li><a href="/tasks">tasks</a></li>
+<li><a class="entypo" href="#" id="add"  rel="tooltip" title="Add new Task">j</a></li>
+<li><a class="entypo" href="{{ request.path }}?completed=true" id="completed"  rel="tooltip" title="See completed Tasks">W</a></li>
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<div class="tasks">
+<div class="task">
+    <input class="input-xlarge" id="quick_task" 
+        placeholder="Add a task. Use # for tags, @ for users and $ for lists and dd/mm/yy for date" />
+</div>
+{% for task in tasks %}
+<div class="task">
+    <div class="inline done"><input 
+        {% if task.completed %}
+            checked="checked"
+        {% endif %}
+        class="complete" type="checkbox" name="task_{{ task.id }}" value="done" data-id="{{ task.id }}"/></div>
+        <div class="inline"><a class="title" href="/tasks/{{ task.id }}">{{ task.title }}</a></div>
+        <div class="inline">
+            {% for user in task.assigned_users.all %}
+                <a class="bubble username" href="/tasks/user/{{ user.id }}">{{ user.username|lower }}</a>
+            {% endfor %}
+        </div>
+        <div class="inline">
+            {% for tag in task.tag.all %}
+                <a class="bubble tag" href="/tasks/tag/{{ tag.id }}">{{ tag.name|lower }}</a>
+            {% endfor %}
+        </div>
+        <div class="inline"><a class="bubble list" href="/tasks/list/{{ task.task_list.id }}">{{ task.task_list.name|lower }}</a></div>
+        <div class="inline"><a class="date" href="/tasks/date/{{ task.due_date|date:"Y" }}/{{ task.due_date|date:"n" }}/{{ task.due_date|date:"j" }}">{{ task.due_date|date:"M d" }}</a></div>
+</div>
+{% endfor %}
+</div>
+
+
+<div class="modal" id="add_task">
+  <div class="modal-header">
+    <button class="close" data-dismiss="modal">×</button>
+    <h3>Add Task</h3>
+  </div>
+  <div class="modal-body">
+      <input type="text" id="title" class="input-xlarge" placeholder="Add a task. Use # for tags, @ for users and $ for lists and dd/mm/yy for date" />
+      <textarea id="notes" class="input-xlarge" placeholder="Add notes. You can use markdown to display your notes :)"></textarea>
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn btn-primary" id="btn_add_task">Add Task</a>
+  </div>
+</div>
+
+{% endblock %}

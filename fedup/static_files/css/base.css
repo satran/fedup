@@ -1,0 +1,107 @@
+@font-face { font-family: CabinSketch-Bold; src: url('../fonts/CabinSketch-Bold.ttf'); } 
+@font-face { font-family: UbuntuCondensed-Regular; src: url('../fonts/Ubuntu/Ubuntu-Light.ttf'); } 
+
+.entypo{
+    font-family: "EntypoRegular";
+}
+body,h1,h2,h3,h4,h5,li,ul,span{
+    font-family: "Ubuntu-Light" sans;
+}
+
+body{
+    color: #555555;
+    font-size:100%;
+    line-height:1.125em; /* 16×1.125=18 */
+}
+p{
+    font-family: "Ubuntu-Light" sans;
+    font-size: 90%;
+    line-height: 1.5;
+}
+a:hover{
+    text-decoration: none;
+}
+.navigation{
+    background: #ffffff;
+    padding: 20px;
+    margin-top: 5px;
+}
+
+.navigation ul{
+    margin: 0;
+    padding: 0;
+}
+
+.navigation li{
+    list-style: none;
+    display: inline;
+    font-size: 250%;
+    padding: 0 10px;
+    line-height: 1.5;
+}
+.navigation .logout{
+    float: right;
+    padding-right: 20px;
+}
+
+.inline{
+    display: inline;
+}
+
+.tasks{
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+
+.task {
+    margin: 5px;
+    padding: 5px;
+    border-bottom: 1px solid #efefef;
+}
+
+.task .inline{
+    margin: 0;
+}
+
+.task .title{
+    color: #555555;
+}
+.bubble {
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    padding: 0 5px;
+    color: #fff;
+}
+.task .tag, .tags, .tags a{
+    color: #99CCFF;
+}
+
+.task .list, .lists, .lists a{
+    color: #CC6666;
+}
+
+.task .username, .users, .users a{
+    color: #66CC99;
+}
+
+.task .done{
+    padding-right: 10px;
+}
+
+.task .notes{
+    padding: 20px 0;
+}
+.comment{
+    max-width: 600px;
+    margin: 5px;
+    padding: 5px 10px;
+    background: #efefef;
+}
+.comment .meta{
+    text-align: right;
+}
+.comment textarea{
+    width: 99%;
+}
