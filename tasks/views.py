@@ -8,6 +8,7 @@ from root.models import Tag
 import datetime
 import re
 
+
 @login_required
 def read_update(request, task_id=None):
     '''
@@ -24,10 +25,16 @@ def read_update(request, task_id=None):
                                     context_instance=RequestContext(request))
 
     elif request.method == "POST":
+        task_text = request.POST.get('task', '')
+        notes = request.POST.get('notes', '')
+        if task_text:
+            task.notes = notes
+            task.save_from_re(task_text)
+
         completed = request.POST.get('completed', '')
         if completed == 'true':
             task.completed = True
-        else:
+        elif completed == 'false':
             task.completed = False
 
         task.save()
@@ -48,43 +55,8 @@ def read_create(request, filter_type=None, filter_id=None):
             new_task = Task()
             new_task.title = task
             new_task.save()
-
-            # Using regular expression to pick the tags:#, user:@, list:$ 
-            # and date dd/mm/yy
-            tags = re.findall('\#\w+', task)
-            users = re.findall('\@\w+', task)
-            lists = re.findall('\$\w+', task)
-            due_date = re.findall('\d{2}/\d{2}/\d{2}', task)
-
-            for tag in tags:
-                tag_obj, _ = Tag.objects.get_or_create(name=tag.lstrip('#'))
-                new_task.tag.add(tag_obj)
-                task = task.replace(tag, '')
-
-            for user in users:
-                # I just continue if the user does not exist.
-                try:
-                    user_obj = User.objects.get(username=user.lstrip('@'))
-                except DoesNotExist:
-                    continue
-                new_task.assigned_users.add(user_obj)
-                task = task.replace(user, '')
-
-            for task_list in lists:
-                task_list_obj, _ = TaskList.objects.get_or_create(name=task_list.lstrip('$'))
-                new_task.task_list = task_list_obj
-                task = task.replace(task_list, '')
-
-            # There must be only one due_date. So if the length of date > 0
-            # we take the first date and store it as due_date
-            if len(due_date) > 0:
-                new_task.due_date = datetime.datetime.strptime(due_date[0], '%d/%m/%y')
-                task = task.replace(due_date[0], '')
-
-            # The dates, users, tags and lists are removed from the title.
-            new_task.title = task
             new_task.notes = notes
-            new_task.save()
+            new_task.save_from_re(task)
             return HttpResponse('success')
 
     # Get Tasks

@@ -2,9 +2,26 @@
 {% load comments %}
 {% load markup %}
 
+{% block styles %}
+<style>
+.modal{
+    display: none;
+}
+.input-xlarge{
+    width: 100%;
+}
+</style>
+{% endblock %}
+
+
 {% block scripts %}
 <script>
 $(document).ready(function(){
+    $('#edit_task').modal({
+        show: false,
+        keyboard: true
+    }); 
+
     $('#complete').tooltip({placement: 'bottom'});
     $('#complete').click(function(){
         var task_id = $(this).data('id');
@@ -12,6 +29,21 @@ $(document).ready(function(){
         .success(function(){
             window.location = "/tasks";
         });
+    });
+    $('#edit-icon').click(function(){
+        $('#edit_task').modal('show');
+    });
+
+    $('#btn_edit_task').click(function(){
+        var task = $('#title').val();
+        var notes = $('#notes').val();
+        if (task){
+            $.post('/tasks/{{ task.id }}', {'task': task, 'notes': notes})
+        .success(function(){
+            $('#edit_task').modal('hide');
+            location.reload();
+        });
+        }
     });
 });
 </script>
@@ -22,6 +54,7 @@ $(document).ready(function(){
 <li><a href="/tasks" class="entypo">(</a></li>
 <li><a href="/tasks/{{ task.id }}">{{ task.title|lower }}</a></li>
 <li><a href="#" class="entypo" rel="tooltip" id="complete" data-id="{{ task.id }}" title="Complete the task.">W</a></li>
+<li><a href="#" class="entypo" rel="tooltip" id="edit-icon" data-id="{{ task.id }}" title="Edit task.">&</a></li>
 {% endblock %}
 
 {% block content %}
@@ -55,4 +88,19 @@ $(document).ready(function(){
 
 {% render_comment_form for task %}
 
+<div class="modal" id="edit_task">
+  <div class="modal-header">
+    <button class="close" data-dismiss="modal">×</button>
+    <h3>Edit Task</h3>
+  </div>
+  <div class="modal-body">
+      <input type="text" id="title" class="input-xlarge" placeholder="Add a task. Use # for tags, @ for users and $ for lists and dd/mm/yy for date" 
+      value="{{ task.title }} {{ task.due_date|date:"d/m/y" }}{% for tag in task.tag.all %} #{{ tag.name }}{% endfor %}{% for user in task.assigned_users.all %} @{{ user.username }}{% endfor %}{% if task.task_list %} ${{ task.task_list.name }}{% endif %} "
+      />
+      <textarea id="notes" class="input-xlarge" placeholder="Add notes. You can use markdown to display your notes :)">{% if task.notes %}{{ task.notes }}{% endif %}</textarea>
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn btn-primary" id="btn_edit_task">Edit Task</a>
+  </div>
+</div>
 {% endblock %}
