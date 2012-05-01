@@ -5,7 +5,9 @@ Fedup is built in Python using Django as the framework.
 
 ###Installation
 
-You need Python and Django installed in your system.
+You need Python installed in your system. Django and markdown are also required. You can install them using `pip`:
+
+    pip install Django markdown
 
 There should be no other dependencies. To start the server:
 
