@@ -136,7 +136,7 @@ INSTALLED_APPS = (
     'django.contrib.markup',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
-    'django_extensions',
+    # 'django_extensions',
     'django.contrib.comments',
     'root',
     'tasks',
@@ -177,9 +177,9 @@ AUTH_PROFILE_MODULE = 'root.UserProfile'
 
 LOGIN_REDIRECT_URL = '/'
 
-# Email Settings
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 25
-EMAIL_HOST_USER = 'noreply@mquotient.net'
-EMAIL_HOST_PASSWORD = 'noreply@mq'
-EMAIL_USE_TLS = True
+# Email Settings. Make sure you fill these if you want email to be send.
+# EMAIL_HOST = ''
+# EMAIL_PORT = 25
+# EMAIL_HOST_USER = ''
+# EMAIL_HOST_PASSWORD = ''
+# EMAIL_USE_TLS = True
