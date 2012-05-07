@@ -20,6 +20,7 @@ class Task(models.Model):
     tag = models.ManyToManyField(Tag, null=True, blank=True)
     task_list = models.ForeignKey(TaskList, null=True, blank=True)
     completed = models.BooleanField(default=False)
+    completed_date = models.DateTimeField(null=True, blank=True)
     
     def __unicode__(self):
         return self.title
