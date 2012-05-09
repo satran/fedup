@@ -34,6 +34,7 @@ def read_update(request, task_id=None):
         completed = request.POST.get('completed', '')
         if completed == 'true':
             task.completed = True
+            task.completed_date = datetime.datetime.now()
         elif completed == 'false':
             task.completed = False
 
