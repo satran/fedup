@@ -177,9 +177,4 @@ AUTH_PROFILE_MODULE = 'root.UserProfile'
 
 LOGIN_REDIRECT_URL = '/'
 
-# Email Settings. Make sure you fill these if you want email to be send.
-# EMAIL_HOST = ''
-# EMAIL_PORT = 25
-# EMAIL_HOST_USER = ''
-# EMAIL_HOST_PASSWORD = ''
-# EMAIL_USE_TLS = True
+from fedup.email_settings import *
