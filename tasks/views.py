@@ -54,8 +54,6 @@ def read_create(request, filter_type=None, filter_id=None):
         notes = request.POST.get('notes')
         if task:
             new_task = Task()
-            new_task.title = task
-            new_task.save()
             new_task.notes = notes
             new_task.save_from_re(task)
             return HttpResponse('success')

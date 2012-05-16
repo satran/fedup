@@ -28,6 +28,8 @@ class Task(models.Model):
     def save_from_re(self, task):
         # Using regular expression to pick the tags:#, user:@, list:$ 
         # and date dd/mm/yy
+        self.title = task
+        self.save()
         tags = re.findall('\#\w+', task)
         users = re.findall('\@\w+', task)
         lists = re.findall('\$\w+', task)

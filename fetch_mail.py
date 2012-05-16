@@ -39,8 +39,7 @@ def add_tasks():
             continue
 
         task = Task()
-        task.title = email_mess['Subject']
-        task.save()
+        task.save_from_re(email_mess['Subject'])
         task.assigned_users.add(user)
 
         if email_mess.get_content_maintype() == 'text':
