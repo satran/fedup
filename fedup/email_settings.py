@@ -7,9 +7,9 @@ EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = True
 
 # Email settings for incoming mails.
-IMAP_HOST = 'imap.google.com'
+IMAP_HOST = ''
 IMAP_USE_SSL = True
 IMAP_PORT = 993
-IMAP_USER_NAME = 'fedup@ranjeev.in'
-IMAP_USER_PASS = "a's;dlfk"
+IMAP_USER_NAME = ''
+IMAP_USER_PASS = ""
 
