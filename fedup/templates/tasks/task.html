@@ -23,6 +23,7 @@ $(document).ready(function(){
     }); 
 
     $('#complete').tooltip({placement: 'bottom'});
+    $('#edit-icon').tooltip({placement: 'bottom'});
     $('#complete').click(function(){
         var task_id = $(this).data('id');
         $.post('/tasks/' + task_id, {'completed': true})
@@ -52,30 +53,36 @@ $(document).ready(function(){
 
 {% block navigation %}
 <li><a href="/tasks" class="entypo">(</a></li>
-<li><a href="/tasks/{{ task.id }}">{{ task.title|lower }}</a></li>
 <li><a href="#" class="entypo" rel="tooltip" id="complete" data-id="{{ task.id }}" title="Complete the task.">W</a></li>
 <li><a href="#" class="entypo" rel="tooltip" id="edit-icon" data-id="{{ task.id }}" title="Edit task.">&</a></li>
 {% endblock %}
 
 {% block content %}
+<h2><a href="/tasks/{{ task.id }}">{{ task.title }}</a></h2>
 <div class="task">
-    <div class="inline"><a class="date" href="/tasks/date/{{ task.due_date }}">{{ task.due_date|date:"M d | f a" }}</a></div>
-    <div class="inline">
-        {% for user in task.assigned_users.all %}
-            <a class="bubble username" href="/tasks/user/{{ user.id }}">{{ user.username|lower }}</a>
-        {% endfor %}
-    </div>
-    <div class="inline">
-        {% for tag in task.tag.all %}
-            <a class="bubble tag" href="/tasks/tag/{{ tag.id }}">{{ tag.name|lower }}</a>
-        {% endfor %}
-    </div>
-    <div class="inline"><a class="bubble list" href="/tasks/list/{{ task.task_list.id }}">{{ task.task_list.name|lower }}</a></div>
-    <div class="notes"><p>
+    <div class="notes">
         {% if task.notes %}
         {{ task.notes|markdown }}
         {% endif %}
-        </p></div>
+    </div>
+    <div class="bubble">
+        {% if task.due_date %}
+        <div class="inline"><a class="bubble date" href="/tasks/date/{{ task.due_date|date:"Y" }}/{{ task.due_date|date:"n" }}/{{ task.due_date|date:"j" }}">{{ task.due_date|date:"M d" }}</a></div>
+        {% endif %}
+        <div class="inline">
+            {% for user in task.assigned_users.all %}
+                <a class="bubble username" href="/tasks/user/{{ user.id }}">{{ user.username|lower }}</a>
+            {% endfor %}
+        </div>
+        <div class="inline">
+            {% for tag in task.tag.all %}
+                <a class="bubble tag" href="/tasks/tag/{{ tag.id }}">{{ tag.name|lower }}</a>
+            {% endfor %}
+        </div>
+        {% if task.task_list %}
+        <div class="inline"><a class="bubble list" href="/tasks/list/{{ task.task_list.id }}">{{ task.task_list.name|lower }}</a></div>
+        {% endif %}
+    </div>
 </div>
 
 {% get_comment_list for task as comment_list %}

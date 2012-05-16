@@ -22,9 +22,9 @@ a:hover{
     text-decoration: none;
 }
 .navigation{
-    background: #ffffff;
-    padding: 20px;
-    margin-top: 5px;
+    background: #6C9;
+    padding: 5px 20px;
+    margin-bottom: 20px;
 }
 
 .navigation ul{
@@ -38,6 +38,12 @@ a:hover{
     font-size: 250%;
     padding: 0 10px;
     line-height: 1.5;
+}
+.navigation a{
+    color: #fff;
+}
+.navigation a:hover{
+    color: #000;
 }
 .navigation .logout{
     float: right;
@@ -55,8 +61,8 @@ a:hover{
 }
 
 .task {
-    margin: 5px;
-    padding: 5px;
+    margin: 5px 0;
+    padding: 5px 0;
     border-bottom: 1px solid #efefef;
 }
 
@@ -72,21 +78,46 @@ a:hover{
     border-radius: 10px;
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
-    padding: 0 5px;
+    padding: 2px 5px;
     color: #fff;
+    font-size: 80%;
+    text-transform: uppercase;
 }
+.task .bubble a{
+color: #fff;
+}
+.bubble .tag{
+    background-color: #99CCFF;
+}
+
+.bubble .list{
+    background-color: #CC6666;
+}
+
+.bubble .username{
+    background-color: #66CC99;
+}
+.bubble .date{
+    background-color: #FFCC66
+}
+
 .task .tag, .tags, .tags a{
     color: #99CCFF;
+    padding-left: 10px;
 }
 
 .task .list, .lists, .lists a{
     color: #CC6666;
+    padding-left: 10px;
 }
 
 .task .username, .users, .users a{
     color: #66CC99;
+    padding-left: 10px;
 }
-
+.task .date{
+    padding-left: 10px;
+}
 .task .done{
     padding-right: 10px;
 }
