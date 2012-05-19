@@ -67,6 +67,30 @@ $(document).ready(function(){
     </div>
 </div>
 {% endfor %}
+
+{% if unapproved %}
+<h2>For your approval.</h2>
+{% for leave in unapproved %}
+<div class="task">
+    <div class="inline done">
+        <div class="inline"><a class="title" href="/leaves/{{ leave.id }}">{{ leave.reason }}</a></div>
+        <div class="inline">on <a class="date" href="/leaves/date/{{ leave.from_date|date:"Y" }}/{{ leave.from_date|date:"n" }}/{{ leave.from_date|date:"j" }}">{{ leave.from_date|date:"M d" }}</a></div>
+        {% if leave.to_date %}
+        <div class="inline">to <a class="date" href="/leaves/date/{{ leave.to_date|date:"Y" }}/{{ leave.to_date|date:"n" }}/{{ leave.to_date|date:"j" }}">{{ leave.to_date|date:"M d" }}</a></div>
+        {% endif %}
+
+        <div class="inline">
+        {% if leave.approved %}
+            Approved
+        {% else %}
+            Unapproved
+        {% endif %}
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
 </div>
 
 

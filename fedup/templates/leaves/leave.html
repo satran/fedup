@@ -2,15 +2,30 @@
 {% load comments %}
 {% load markup %}
 
+{% block styles %}
+<style>
+.modal{
+    display: none;
+}
+</style>
+{% endblock %}
 {% block scripts %}
 <script>
 $(document).ready(function(){
-    $('#complete').tooltip({placement: 'bottom'});
-    $('#complete').click(function(){
+    $('#loading').modal({
+        show: false,
+        keyboard: true
+    }); 
+    $('#approve').tooltip({placement: 'bottom'});
+    $('#approve').click(function(){
+        $('#loading').modal('show');
         var leave_id = $(this).data('id');
         $.post('/leaves/' + leave_id, {'approved': true})
         .success(function(){
             window.location = "/leaves";
+        })
+        .error(function(data){
+            alert(data.responseText);
         });
     });
 });
@@ -20,15 +35,17 @@ $(document).ready(function(){
 
 {% block navigation %}
 <li><a href="/leaves" class="entypo">(</a></li>
-<li><a href="/leaves/{{ leave.id }}">{{ leave.reason|lower }}</a></li>
-<li><a href="#" class="entypo" rel="tooltip" id="complete" data-id="{{ leave.id }}" title="Approve the leave.">8</a></li>
+{% if leave.user.userprofile in user.supervisor.all and not leave.approved %}
+<li><a href="#" class="entypo" rel="tooltip" id="approve" data-id="{{ leave.id }}" title="Approve the leave.">8</a></li>
+{% endif %}
 {% endblock %}
 
 {% block content %}
+<h2><a href="/leaves/{{ leave.id }}">{{ leave.reason }}</a></h2>
 <div class="task">
-    <div class="inline">on <a class="date" href="/leaves/date/{{ leave.from_date }}">{{ leave.from_date|date:"M d Y" }}</a></div>
+    <div class="inline">on <a class="date" href="/leaves/date/{{ leave.from_date }}">{{ leave.from_date|date:"M d, Y" }}</a></div>
     {% if leave.to_date %}
-    <div class="inline">to <a class="date" href="/leaves/date/{{ leave.to_date }}">{{ leave.to_date|date:"M d Y" }}</a></div>
+    <div class="inline">to <a class="date" href="/leaves/date/{{ leave.to_date }}">{{ leave.to_date|date:"M d, Y" }}</a></div>
     {% endif %}
 </div>
 
@@ -42,5 +59,14 @@ $(document).ready(function(){
 
 {% render_comment_form for leave %}
 
+<div class="modal" id="loading">
+  <div class="modal-header">
+    <button class="close" data-dismiss="modal">×</button>
+    <h3>Loading...</h3>
+  </div>
+  <div class="modal-body">
+      <p>The task is being approved. Please wait.</p>
+  </div>
+</div>
 {% endblock %}
 

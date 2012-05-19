@@ -1,9 +1,10 @@
 from django.shortcuts import render_to_response
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.template import RequestContext
 from django.core.mail import send_mail
 from leaves.models import Leave
 from django.contrib.auth.decorators import login_required
+from fedup.email_settings import EMAIL_HOST_USER
 import datetime
 import re
 
@@ -12,8 +13,13 @@ def read_create(request):
     if request.method == 'GET':
         leaves = Leave.objects.filter(user=request.user).order_by('-from_date')
 
+        # Fetching leaves that need to be approved by the logged in user.
+        unapproved = []
+        for junior in request.user.supervisor.all():
+            unapproved.extend(Leave.objects.filter(user=junior, approved=False))
+
         return render_to_response('leaves/index.html', 
-                                    {'leaves': leaves}, 
+                                    {'leaves': leaves, 'unapproved': unapproved}, 
                                     context_instance=RequestContext(request))
     elif request.method == 'POST':
         leave_text = request.POST.get('leave')
@@ -45,7 +51,7 @@ To approve the leave please click on the link http://localhost:8000/leaves/{4}''
                                         leave.reason,
                                         leave.id
                                     ),
-                                'noreply@mquotient.net',
+                                EMAIL_HOST_USER,
                                 [supervisor.email]
                                 )
 
@@ -69,9 +75,24 @@ def read_update(request, leave_id=None):
         approved = request.POST.get('approved', '')
         if approved == 'true':
             leave.approved = True
-        else:
-            leave.approved = False
+            if leave.user.userprofile in request.user.supervisor.all():
+                leave.approved_by = request.user
+                leave.approved_on = datetime.datetime.now()
+                leave.save()
 
-        leave.save()
+                send_mail(
+                        'Your leave has been approved.',
+                        'Your leave,\n {0}\n has been approved by {1} on {2}.'.format(
+                                leave.reason,
+                                leave.approved_by.first_name + ' ' + leave.approved_by.last_name,
+                                leave.approved_on.date().isoformat()
+                            ),
+                        EMAIL_HOST_USER,
+                        [request.user.email]
+                        )
+            else:
+                return HttpResponseBadRequest('Sorry you are not authorized to approved this leave.')
+        else:
+            return HttpResponseBadRequest('Sorry, Leave once approved cannot be disapproved.')
 
         return HttpResponse('success')
