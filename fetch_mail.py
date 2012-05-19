@@ -7,10 +7,37 @@ from django.core.management import setup_environ
 from fedup import settings
 setup_environ(settings)
 
-#from fedup.email_settings import IMAP_HOST, IMAP_USE_SSL, IMAP_PORT, IMAP_USER_NAME, IMAP_USER_PASS
 from tasks.models import Task
 from django.conf import settings
 from django.contrib.auth.models import User
+
+
+def create_task(task_title, user):
+    """
+    Creates the task with the `task_title` and assigns the `user` to
+    `assigned_users` if `assigned_users` is empty.
+    """
+    task = Task()
+    task.save_from_re(task_title)
+
+    # If user was not yet assigned use the email user.
+    if len(task.assigned_users.all()) == 0:
+        task.assigned_users.add(user)
+
+    return task
+
+
+def get_text_payload(email_mess):
+    '''
+    Returns the text version of the passed mail.
+    '''
+    if email_mess.get_content_maintype() == 'text':
+        return email_mess.get_payload()
+    elif email_mess.get_content_maintype() == 'multipart':
+        for part in email_mess.get_payload():
+            if part.get_content_type() == 'text/plain':
+                return part.get_payload()
+
 
 def add_tasks():
     if settings.IMAP_USE_SSL:
@@ -38,19 +65,24 @@ def add_tasks():
         except User.DoesNotExist:
             continue
 
-        task = Task()
-        task.save_from_re(email_mess['Subject'])
-        task.assigned_users.add(user)
+        # Creating multiple tasks.
+        if not email_mess['Subject']:
+            content = get_text_payload(email_mess)
+            for line in content.splitlines():
+                if line.startswith('-'):
+                    task_title = line.lstrip('-').strip()
+                    task = create_task(task_title, user)
+                    task.save()
+            print content
 
-        if email_mess.get_content_maintype() == 'text':
-            task.notes = email_mess.get_payload()
-        elif email_mess.get_content_maintype() == 'multipart': 
-            for part in email_mess.get_payload():
-                if part.get_content_type() == 'text/plain':
-                    task.notes = part.get_payload().replace('\n> ', '\n').replace('\n *> ', '\n').replace('\n', '  \n').replace('=20', '').replace('=\r', '\r')
-        task.save()
-        
-        print "{0} was created!".format(task.title)
+        else:
+            task = create_task(email_mess['Subject'], user)
+            notes = get_text_payload(email_mess)
+            task.notes = notes.replace('\n> ', '\n').replace('\n *> ', '\n').replace('\n', '  \n').replace('=20', '').replace('=\r', '\r')
+            task.save()
+
+            print "{0} was created!".format(task.title)
+
 
 if __name__ == '__main__':
     add_tasks()
