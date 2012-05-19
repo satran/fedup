@@ -22,7 +22,7 @@ a:hover{
     text-decoration: none;
 }
 .navigation{
-    background: #6C9;
+    background: #3c3c3c;
     padding: 5px 20px;
     margin-bottom: 20px;
 }
@@ -43,7 +43,7 @@ a:hover{
     color: #fff;
 }
 .navigation a:hover{
-    color: #000;
+    color: #afafaf;
 }
 .navigation .logout{
     float: right;
